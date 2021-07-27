@@ -1,0 +1,7 @@
+{
+    "app_name": "DRS",
+    "author": "Benja Share",
+    "main_module": "src/main/python/main.py",
+    "version": "0.0.0",
+    "hidden_imports": ["openpyxl"]
+}
