@@ -83,7 +83,7 @@ def ssLookup(phoneNum, env):
     while ws['A'+str(i)].value is not None:
         if ws['S'+str(i)].value == phoneNum:
             date = str(ws['L' + str(i)].value)  # date in YYYY-MM-DD HH:MM:SS
-            print(date)
+            # print(date)
             date = date[0:10]  # date in YYYY-MM-DD need MM-DD-M_D_YYYY
             dYear = date[0:4]
             dMonth = date[5:7]
