@@ -1,10 +1,10 @@
 """The main file."""
 
 import os
-import utils
 import openpyxl
 from shutil import copyfile
 from openpyxl.styles import PatternFill
+import filecmp
 fill = PatternFill("solid", fgColor='92d051')
 
 
@@ -58,7 +58,7 @@ def findFiles(date, env):
 def findPhoneNums(env):
     """Return list of enrolled phone numbers that haven't been checked off."""
     wbPath = os.path.abspath(env['EXCEL'])
-    print('wbPath=',wbPath)
+    # print('wbPath=', wbPath)
     wb = openpyxl.load_workbook(wbPath)
     ws = wb.active
     i = 2
@@ -82,11 +82,12 @@ def ssLookup(phoneNum, env):
     i = 1
     while ws['A'+str(i)].value is not None:
         if ws['S'+str(i)].value == phoneNum:
-            date = str(ws['L' + str(i)].value) #date in YYYY-MM-DD HH:MM:SS
-            date = date[0:10] #date in YYYY-MM-DD need MM-DD-M_D_YYYY
+            date = str(ws['L' + str(i)].value)  # date in YYYY-MM-DD HH:MM:SS
+            print(date)
+            date = date[0:10]  # date in YYYY-MM-DD need MM-DD-M_D_YYYY
             dYear = date[0:4]
             dMonth = date[5:7]
-            dDate = date[9:11]
+            dDate = date[8:10]
             newDate = dMonth + '-' + dDate + '-' + dYear
             user = {
                 "FNAME": str(ws['G'+str(i)].value),
@@ -115,19 +116,33 @@ def markExcelRow(phoneNum, env):
             i += 1
 
 
-def renameFile(fileArr, date, env):
+def renameFile(fileArr, date, env, repeat):
     """Copy .wav to new location and changes name."""
     file = os.path.abspath(os.path.join(env['SOURCE'], date, fileArr[0]))
     user = ssLookup(fileArr[1], env)
     if(not os.path.isdir(os.path.join(env['DEST'], date))):
         os.mkdir(os.path.join(env['DEST'], date))
     # print(user['Enrollment Date'])
+    if(repeat == 0):
+        repeatStr = ''
+    else:
+        repeatStr = str(repeat)
     destination = os.path.abspath(os.path.join(env['DEST'], date,
                                                user['FNAME'] + ' ' +
                                                user['LNAME'] + ' ' +
                                                user['Enrollment Date'] +
-                                               '.wav'))
+                                               repeatStr + '.wav'))
+    # check to make sure file with same name doesn't already exist
+    if(os.path.isfile(destination)):
+        # if it does see if it is the same file
+        if(filecmp.cmp(file, destination)):
+            # return True meaning day has been run
+            return True
+        else:
+            # rerun function with repeat incremented by 1
+            return renameFile(fileArr, date, env, repeat + 1)
     copyfile(file, destination)
+    return False
 
 
 def main():

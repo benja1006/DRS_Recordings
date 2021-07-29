@@ -150,7 +150,13 @@ class Gui(QDialog):
 
         # Move and mark excel rows for returnFiles
         for fileArr in returnFiles:
-            text.renameFile(fileArr, mdy, self.Env)
+            repeat = text.renameFile(fileArr, mdy, self.Env, 0)
+            # if repeat is true, then files already exist at output
+            if(repeat):
+                alert = QMessageBox()
+                alert.setText('Query has already been run')
+                alert.exec_()
+                break
             text.markExcelRow(fileArr[1], self.Env)
             self.advanceMainProgressBar()
 
@@ -196,7 +202,7 @@ class Gui(QDialog):
     def on_saveEnv_clicked(self):
         """Update the env file based off of the new text."""
         self.saveEnvProgressBar.setValue(0)
-        self.saveEnvProgressBar.setRange(0,1)
+        self.saveEnvProgressBar.setRange(0, 1)
         newEnv = {
             'SOURCE': self.SrcField.text(),
             'DEST': self.DestField.text(),
@@ -207,6 +213,7 @@ class Gui(QDialog):
         self.saveEnvProgressBar.setValue(1)
 
     def on_envText_changed(self):
+        """Reset the env progress bar when text is changed."""
         self.saveEnvProgressBar.setValue(0)
 
     def createRightGroup(self):

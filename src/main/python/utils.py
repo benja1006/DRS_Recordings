@@ -1,5 +1,4 @@
-"""A set of multiuse modules."""
-import os
+"""A set of multiuse functions."""
 
 
 def getEnv(envPath):
