@@ -126,7 +126,7 @@ def renameFile(fileArr, date, env, repeat):
     if(repeat == 0):
         repeatStr = ''
     else:
-        repeatStr = str(repeat)
+        repeatStr = ' (' + str(repeat) + ')'
     destination = os.path.abspath(os.path.join(env['DEST'], date,
                                                user['FNAME'] + ' ' +
                                                user['LNAME'] + ' ' +
